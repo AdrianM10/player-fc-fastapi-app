@@ -29,4 +29,18 @@ class IacStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_12,
             index="main.py",
             handler="handler",
+            
+            
         )
+
+        # Create Lambda Function URL
+        functionUrl = api.add_function_url(
+            auth_type=_lambda.FunctionUrlAuthType.NONE,
+            cors=_lambda.FunctionUrlCorsOptions(
+                allowed_origins=["*"],
+                allowed_methods=[_lambda.HttpMethod.ALL],
+                allowed_headers=["*"]
+            )
+        )
+
+
