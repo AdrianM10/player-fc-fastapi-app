@@ -1,9 +1,11 @@
 from aws_cdk import (
     Stack,
     aws_dynamodb as dynamodb,
-    
+    aws_lambda as _lambda,
+
 )
 from constructs import Construct
+
 
 class IacStack(Stack):
 
@@ -13,5 +15,16 @@ class IacStack(Stack):
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
                                  table_name="Players",
-        partition_key=dynamodb.Attribute(name="PlayerId", type=dynamodb.AttributeType.STRING)
-)
+                                 partition_key=dynamodb.Attribute(
+                                     name="PlayerId", type=dynamodb.AttributeType.STRING)
+
+                                 )
+
+        # Create Lambda function for API endpoint
+        api = _lambda.Function(
+            self,
+            "API",
+            runtime=_lambda.Runtime.PYTHON_3_12,
+            handler="main.handler",
+            code=_lambda.Code.from_asset("../app"),     
+        )
