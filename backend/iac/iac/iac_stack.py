@@ -2,6 +2,7 @@ from aws_cdk import (
     Stack,
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
+    aws_lambda_python_alpha as _alambda
 
 )
 from constructs import Construct
@@ -21,10 +22,11 @@ class IacStack(Stack):
                                  )
 
         # Create Lambda function for API endpoint
-        api = _lambda.Function(
+        api = _alambda.PythonFunction(
             self,
             "API",
+            entry="../app",
             runtime=_lambda.Runtime.PYTHON_3_12,
-            handler="main.handler",
-            code=_lambda.Code.from_asset("../app"),     
+            index="main.py",
+            handler="handler",
         )
