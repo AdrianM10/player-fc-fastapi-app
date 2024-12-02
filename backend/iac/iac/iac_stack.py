@@ -30,8 +30,7 @@ class IacStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_12,
             index="main.py",
             handler="handler",
-            
-            
+
         )
 
         # Create Lambda Function URL
@@ -46,4 +45,3 @@ class IacStack(Stack):
 
         # Print the Function URL
         CfnOutput(self, "FunctionUrl", value=functionUrl.url)
-
