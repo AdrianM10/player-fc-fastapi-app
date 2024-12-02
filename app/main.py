@@ -11,7 +11,7 @@ handler = Mangum(app)
 class Player(BaseModel):
     name: str
     country: str
-    date_of_birth: date
+    # date_of_birth: date
     team: str
     position: str
     shirt_number: int
@@ -30,13 +30,31 @@ def get_local_dynamodb_table():
                           aws_access_key_id="myid",
                           aws_secret_access_key="myaccesskey").Table(table_name)
 
+
 def get_dynamoddb_table():
     table_name = "Players"
     return boto3.resource("dynamodb").Table(table_name)
 
 # @app.get("/players/{}")
 
-# @app.post
+
+@app.post("/players/")
+async def add_player(player: Player):
+    item = {
+        "PlayerId": "1",
+        "name": player.name,
+        "country": player.country,
+        # "date_of_birth": player.date_of_birth,
+        "team": player.team,
+        "position": player.position,
+        "shirt_number": player.shirt_number,
+    }
+
+    # Add player to Dynamo DB Table
+    table = get_local_dynamodb_table()
+    table.put_item(Item=item)
+    return {"player": item}
+
 
 # @app.put
 
