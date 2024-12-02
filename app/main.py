@@ -26,7 +26,7 @@ def root():
 
 @app.post("/players/")
 async def add_player(player: Player):
-    player_id = uuid.uuid4()
+    player_id = uuid.uuid5(uuid.NAMESPACE_DNS, f"{player.name}-{player.country}")
 
     item = {
         "id": str(player_id),
