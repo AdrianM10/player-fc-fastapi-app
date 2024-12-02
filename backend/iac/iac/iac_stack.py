@@ -1,5 +1,6 @@
 from aws_cdk import (
     Stack,
+    Duration,
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
     aws_lambda_python_alpha as _alambda,
@@ -32,6 +33,7 @@ class IacStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_12,
             index="main.py",
             handler="handler",
+            timeout=Duration.seconds(60)
 
         )
 
