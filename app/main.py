@@ -9,6 +9,7 @@ import uuid
 app = FastAPI()
 handler = Mangum(app)
 
+local_development = True
 
 class Player(BaseModel):
     name: str
@@ -39,15 +40,15 @@ async def add_player(player: Player):
     }
 
     # Add player to Dynamo DB Table
-    table = get_local_dynamodb_table()
+    table = get_dynamoddb_table()
     table.put_item(Item=item)
-    return {"player_id": item["id"]}
+    return {"player_id": item["id"], "player_name": item["name"]}
 
 
 @app.get("/players/{id}")
 async def get_player(id: str):
     # Retrieve player data by id from table
-    table = get_local_dynamodb_table()
+    table = get_dynamoddb_table()
     response = table.get_item(Key={"id": id})
     item = response.get("Item")
     return item
@@ -57,15 +58,23 @@ async def get_player(id: str):
 
 # @app.delete
 
-def get_local_dynamodb_table():
-    table_name = "Players"
-    return boto3.resource("dynamodb",
-                          endpoint_url="http://localhost:7001",
-                          region_name="af-south",
-                          aws_access_key_id="myid",
-                          aws_secret_access_key="myaccesskey").Table(table_name)
+# def get_local_dynamodb_table():
+#     table_name = "Players"
+#     return boto3.resource("dynamodb",
+#                           endpoint_url="http://localhost:7001",
+#                           region_name="af-south",
+#                           aws_access_key_id="myid",
+#                           aws_secret_access_key="myaccesskey").Table(table_name)
 
 
 def get_dynamoddb_table():
     table_name = "Players"
-    return boto3.resource("dynamodb").Table(table_name)
+
+    if local_development:
+        return boto3.resource("dynamodb",
+                          endpoint_url="http://localhost:7001",
+                          region_name="af-south",
+                          aws_access_key_id="myid",
+                          aws_secret_access_key="myaccesskey").Table(table_name)
+    else:
+        return boto3.resource("dynamodb").Table(table_name)
