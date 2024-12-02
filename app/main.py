@@ -2,14 +2,15 @@ from fastapi import FastAPI
 from mangum import Mangum
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
 import boto3
+import uuid
 
 app = FastAPI()
 handler = Mangum(app)
 
 
 class Player(BaseModel):
-    id: str
     name: str
     country: str
     # date_of_birth: date
@@ -26,7 +27,7 @@ def root():
 @app.post("/players/")
 async def add_player(player: Player):
     item = {
-        "id": "1",
+        "id": uuid.uuid5(player.name),
         "name": player.name,
         "country": player.country,
         # "date_of_birth": player.date_of_birth,
