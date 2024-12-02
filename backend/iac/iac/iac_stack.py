@@ -28,6 +28,7 @@ class IacStack(Stack):
             self,
             "API",
             entry="../app",
+            function_name="player_fc_api",
             runtime=_lambda.Runtime.PYTHON_3_12,
             index="main.py",
             handler="handler",
