@@ -19,7 +19,7 @@ class IacStack(Stack):
                                  table_name="Players",
                                  partition_key=dynamodb.Attribute(
                                      name="PlayerId", type=dynamodb.AttributeType.STRING),
-                                 billing=dynamodb.BillingMode.PAY_PER_REQUEST,
+                                #  billing=dynamodb.BillingMode.PAY_PER_REQUEST,
 
                                  )
 
@@ -47,3 +47,6 @@ class IacStack(Stack):
 
         # Print the Function URL
         CfnOutput(self, "FunctionUrl", value=functionUrl.url)
+
+        # Permissions for Function to access DynamoDB
+        table.grant_read_write_data(api)
