@@ -2,7 +2,8 @@ from aws_cdk import (
     Stack,
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
-    aws_lambda_python_alpha as _alambda
+    aws_lambda_python_alpha as _alambda,
+    CfnOutput
 
 )
 from constructs import Construct
@@ -43,4 +44,6 @@ class IacStack(Stack):
             )
         )
 
+        # Print the Function URL
+        CfnOutput(self, "FunctionUrl", value=functionUrl.url)
 
