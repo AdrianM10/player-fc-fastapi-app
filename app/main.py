@@ -23,12 +23,10 @@ def root():
     return {"statusCode": 200, "body": "Hello Player! Welcome To The Beautiful Game"}
 
 
-
-
 @app.post("/players/")
 async def add_player(player: Player):
     item = {
-        "PlayerId": "1",
+        "id": "1",
         "name": player.name,
         "country": player.country,
         # "date_of_birth": player.date_of_birth,
@@ -42,11 +40,12 @@ async def add_player(player: Player):
     table.put_item(Item=item)
     return {"player": item}
 
+
 @app.get("/players/{id}")
 async def get_player(id: str):
     # Retrieve player data by id from table
     table = get_local_dynamodb_table()
-    response = table.get_item(Key={"PlayerId": id})
+    response = table.get_item(Key={"id": id})
     item = response.get("Item")
     return item
 

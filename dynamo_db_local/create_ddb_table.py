@@ -19,7 +19,7 @@ def main():
 def create_dynamodb_table(dynamodb):
 
     # Check if DynamoDB Table exists
-    table_name = "PlayersOnly"
+    table_name = "Players"
 
     existing_tables = dynamodb.meta.client.list_tables()["TableNames"]
 
@@ -31,9 +31,9 @@ def create_dynamodb_table(dynamodb):
 
             table = dynamodb.create_table(
                 TableName=table_name,
-                KeySchema=[{"AttributeName": "PlayerId", "KeyType": "HASH"}],
+                KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
                 AttributeDefinitions=[
-                    {"AttributeName": "PlayerId", "AttributeType": "S"}],
+                    {"AttributeName": "id", "AttributeType": "S"}],
                 BillingMode='PAY_PER_REQUEST'
             )
 
