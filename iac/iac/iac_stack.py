@@ -1,6 +1,7 @@
 from aws_cdk import (
     Stack,
     Duration,
+    RemovalPolicy,
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
     aws_lambda_python_alpha as _alambda,
@@ -20,7 +21,10 @@ class IacStack(Stack):
                                  table_name="Players",
                                  partition_key=dynamodb.Attribute(
                                      name="PlayerId", type=dynamodb.AttributeType.STRING),
+                                     
                                 #  billing=dynamodb.BillingMode.PAY_PER_REQUEST,
+                                removal_policy=RemovalPolicy.DESTROY,
+        
 
                                  )
 
