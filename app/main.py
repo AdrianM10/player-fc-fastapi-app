@@ -26,8 +26,10 @@ def root():
 
 @app.post("/players/")
 async def add_player(player: Player):
+    player_id = uuid.uuid4()
+
     item = {
-        "id": uuid.uuid5(player.name),
+        "id": str(player_id),
         "name": player.name,
         "country": player.country,
         # "date_of_birth": player.date_of_birth,
@@ -39,7 +41,7 @@ async def add_player(player: Player):
     # Add player to Dynamo DB Table
     table = get_local_dynamodb_table()
     table.put_item(Item=item)
-    return {"player": item}
+    return {"player_id": item["id"]}
 
 
 @app.get("/players/{id}")
