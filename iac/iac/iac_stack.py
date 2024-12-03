@@ -20,7 +20,7 @@ class IacStack(Stack):
         table = dynamodb.TableV2(self, "Table",
                                  table_name="Players",
                                  partition_key=dynamodb.Attribute(
-                                     name="PlayerId", type=dynamodb.AttributeType.STRING),
+                                     name="id", type=dynamodb.AttributeType.STRING),
                                  removal_policy=RemovalPolicy.DESTROY,
                                  )
 
