@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from mangum import Mangum
 from pydantic import BaseModel
 from datetime import date
@@ -71,6 +71,9 @@ async def get_player(id: str):
     table = get_dynamoddb_table()
     response = table.get_item(Key={"id": id})
     item = response.get("Item")
+
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Player '{id}' not found")
     return item
 
 
@@ -78,9 +81,12 @@ async def get_player(id: str):
 async def get_all_players():
     # Retrieve all players from DynamoDB Table
     table = get_dynamoddb_table()
-    response = table.scan()
-    items = response["Items"]
-    return {"count": len(items) ,"players": items}
+    try:
+        response = table.scan()
+        items = response["Items"]
+        return {"count": len(items) ,"data": items}
+    except Exception as e:
+        print(f"An error occurred retrieving players: {e}")
 
 
 @app.patch("/players/{id}")
@@ -115,10 +121,13 @@ async def update_player(id: str, player: UpdatePlayer):
 async def delete_player(id: str):
     # Delete player from DynamoDB Table
     table = get_dynamoddb_table()
-    response = table.delete_item(Key={
-        "id": id
-    })
-    return {"deleted_id": id}
+    try:
+        response = table.delete_item(Key={
+            "id": id
+        })
+        return {"deleted_id": id}
+    except Exception as e:
+        print(f"An error occurred deleting player.")
 
 
 def get_dynamoddb_table():
