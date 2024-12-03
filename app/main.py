@@ -10,7 +10,7 @@ import uuid
 app = FastAPI()
 handler = Mangum(app)
 
-local_development = True
+local_development = False
 
 
 class Player(BaseModel):
@@ -77,7 +77,7 @@ async def get_player(id: str):
     return item
 
 
-@app.get("/players/")
+@app.get("/players")
 async def get_all_players():
     # Retrieve all players from DynamoDB Table
     table = get_dynamoddb_table()
