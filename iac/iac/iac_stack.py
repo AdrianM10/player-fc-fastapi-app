@@ -48,7 +48,7 @@ class IacStack(Stack):
         )
 
         # Print the Function URL
-        CfnOutput(self, "FunctionUrl", value=functionUrl.url)
+        CfnOutput(self, "FunctionUrl", value=f"{functionUrl.url}docs")
 
         # Permissions for Function to access DynamoDB
         table.grant_read_write_data(api)
