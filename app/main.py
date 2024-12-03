@@ -10,7 +10,7 @@ import uuid
 app = FastAPI()
 handler = Mangum(app)
 
-local_development = False
+local_development = True
 
 
 class Player(BaseModel):
@@ -84,7 +84,7 @@ async def get_all_players():
     try:
         response = table.scan()
         items = response["Items"]
-        return {"count": len(items) ,"data": items}
+        return {"count": len(items), "data": items}
     except Exception as e:
         print(f"An error occurred retrieving players: {e}")
 
@@ -121,13 +121,22 @@ async def update_player(id: str, player: UpdatePlayer):
 async def delete_player(id: str):
     # Delete player from DynamoDB Table
     table = get_dynamoddb_table()
+
     try:
-        response = table.delete_item(Key={
+
+        response = table.get_item(Key={"id": id})
+
+        if "Item" not in response:
+            raise HTTPException(status_code=404, detail=f"Player '{id}' not found")
+
+        table.delete_item(Key={
             "id": id
         })
+
         return {"deleted_id": id}
+
     except Exception as e:
-        print(f"An error occurred deleting player.")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def get_dynamoddb_table():
