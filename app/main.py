@@ -25,9 +25,9 @@ def root():
     return {"statusCode": 200, "body": "Hello Player! Welcome To The Beautiful Game"}
 
 
-@app.post("/players/")
-async def add_player(player: Player):
-    
+@app.post("/players")
+async def create_player(player: Player):
+
     player_id = uuid.uuid5(uuid.NAMESPACE_DNS, f"{player.name}-{player.country}")
 
     item = {
@@ -58,9 +58,19 @@ async def get_player(id: str):
     return item
 
 
-# @app.put
+# @app.put("/players/{id}")
 
-# @app.delete
+
+@app.delete("/players/{id}")
+async def delete_player(id: str):
+    # Delete player from table
+    table = get_dynamoddb_table()
+    response = table.delete_item(Key={
+        "id": id
+    })
+    return {"deleted_id": id}
+
+
 
 def get_dynamoddb_table():
     table_name = "Players"
