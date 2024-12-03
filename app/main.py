@@ -32,7 +32,9 @@ class UpdatePlayer(BaseModel):
 
 @app.get("/")
 def root():
-    return {"statusCode": 200, "body": "Hello Player! Welcome To The Beautiful Game"}
+    return {"message": "Welcome to the Players FC API!",
+            "description": "We all know young fans support players over the team.",
+            }
 
 
 @app.post("/players")
@@ -78,12 +80,12 @@ async def get_all_players():
     table = get_dynamoddb_table()
     response = table.scan()
     items = response["Items"]
-    return {"players": items}
+    return {"count": len(items) ,"players": items}
 
 
 @app.patch("/players/{id}")
 async def update_player(id: str, player: UpdatePlayer):
-    # Update player details in DynamoDB Table
+    """Update player details in DynamoDB Table"""
     table = get_dynamoddb_table()
     try:
         response = table.update_item(
@@ -104,7 +106,7 @@ async def update_player(id: str, player: UpdatePlayer):
             ReturnValues="UPDATED_NEW",
 
         )
-        return {"attributes": response["Attributes"]}
+        return {"id": id, "attributes": response["Attributes"]}
     except Exception as e:
         print(f"An error occurred updating {id}: {e}")
 
