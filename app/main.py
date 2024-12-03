@@ -17,7 +17,8 @@ class Player(BaseModel):
     date_of_birth: date
     team: str
     position: str
-    shirt_number: int
+    club_number: int
+    national_team_number: int
 
 
 @app.get("/")
@@ -37,10 +38,11 @@ async def create_player(player: Player):
         "date_of_birth": player.date_of_birth.isoformat(),
         "team": player.team,
         "position": player.position,
-        "shirt_number": player.shirt_number,
+        "club_number": player.club_number,
+        "national_team_number": player.national_team_number
     }
 
-    # Add player to Dynamo DB Table
+    # Add player to DynamoDB Table
     try:
         table = get_dynamoddb_table()
         table.put_item(Item=item)
@@ -51,19 +53,27 @@ async def create_player(player: Player):
 
 @app.get("/players/{id}")
 async def get_player(id: str):
-    # Retrieve player data by id from table
+    # Retrieve player data by id from DynamoDB Table
     table = get_dynamoddb_table()
     response = table.get_item(Key={"id": id})
     item = response.get("Item")
     return item
 
+@app.get("/players/")
+async def get_all_players():
+    # Retrieve all players from DynamoDB Table
+    table = get_dynamoddb_table()
+    response = table.scan()
+    items = response["Items"]
+    return {"players" : items}
 
-# @app.put("/players/{id}")
+
+# @app.patch("/players/{id}")
 
 
 @app.delete("/players/{id}")
 async def delete_player(id: str):
-    # Delete player from table
+    # Delete player from DynamoDB Table
     table = get_dynamoddb_table()
     response = table.delete_item(Key={
         "id": id
