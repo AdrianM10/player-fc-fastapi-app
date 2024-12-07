@@ -113,7 +113,14 @@ async def update_player(id: str, player: UpdatePlayer):
     update_expression = "set " + \
         ", ".join(f"#{key} = :{key}" for key in update_fields.keys())
     
-    return {"message": update_expression}
+    # Dynamically build 'ExpressionAttributeNames'
+
+    expression_attribute_names = {f"#{key}": value for key, value in update_fields.items()}
+
+    # Dynamically build 'ExpressionAttributeValues'
+    expression_attribute_values = {f":{key}": value for key, value in update_fields.items()}
+    
+    return {"message": expression_attribute_values}
 
     # try:
     #     response = table.update_item(
