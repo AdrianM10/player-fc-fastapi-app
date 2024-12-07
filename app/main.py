@@ -81,18 +81,20 @@ async def get_player(id: str):
 async def get_all_players():
     # Retrieve all players from DynamoDB Table
     table = get_dynamoddb_table()
-    try:
-        response = table.scan()
-        items = response["Items"]
+    response = table.scan()
+    items = response["Items"]
+
+    if len(items) == 0:
+        return {"message": "No players found"}
+    else:
         return {"count": len(items), "data": items}
-    except Exception as e:
-        print(f"An error occurred retrieving players: {e}")
 
 
 @app.patch("/players/{id}")
 async def update_player(id: str, player: UpdatePlayer):
     """Update player details in DynamoDB Table"""
     table = get_dynamoddb_table()
+
     try:
         response = table.update_item(
             Key={"id": id},
@@ -127,7 +129,8 @@ async def delete_player(id: str):
         response = table.get_item(Key={"id": id})
 
         if "Item" not in response:
-            raise HTTPException(status_code=404, detail=f"Player '{id}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Player '{id}' not found")
 
         table.delete_item(Key={
             "id": id
