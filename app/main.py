@@ -1,10 +1,16 @@
+import botocore.exceptions
 from fastapi import FastAPI, HTTPException, status
 from mangum import Mangum
 from pydantic import BaseModel
 from datetime import date
 from typing import Optional
 import boto3
+import botocore
 import uuid
+import logging
+
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 
 app = FastAPI()
@@ -33,7 +39,7 @@ class UpdatePlayer(BaseModel):
 @app.get("/")
 def root():
     return {"message": "Welcome to the Players FC API!",
-            "description": "We all know young fans support players over the team.",
+            "description": "Some say 'No player is bigger than the club.' Let's be real, we care more about players than the actual team most of the time.",
             }
 
 
@@ -61,8 +67,9 @@ async def create_player(player: Player):
         table = get_dynamodb_table()
         table.put_item(Item=item)
         return {"player_id": item["id"], "player_name": item["name"]}
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    except botocore.exceptions.ClientError as e:
+        logging.exception(f"An error occurred: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred creating player.")
 
 
 @app.get("/players/{id}")
@@ -81,13 +88,19 @@ async def get_player(id: str):
 async def get_all_players():
     """Retrieve all players from DynamoDB Table"""
     table = get_dynamodb_table()
-    response = table.scan()
-    items = response["Items"]
 
-    if len(items) == 0:
-        return {"message": "No players found"}
-    else:
-        return {"count": len(items), "players": items}
+    try:
+        response = table.scan()
+        items = response["Items"]
+
+        if len(items) == 0:
+            return {"message": "No players found"}
+        else:
+            return {"count": len(items), "players": items}
+    except botocore.exceptions.ClientError as e:
+        logging.exception(f"An error occurred: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred retrieving all players.")
+    
 
 
 @app.patch("/players/{id}")
@@ -105,21 +118,22 @@ async def update_player(id: str, player: UpdatePlayer):
                             id}' does not exist")
 
     update_fields = {
-        key: value for key, value in player
+        key: value for key, value in player.model_dump()
         if value is not None
     }
 
     # Dynamically build 'UpdateExpression'
     update_expression = "set " + \
         ", ".join(f"#{key} = :{key}" for key in update_fields.keys())
-    
+
     # Dynamically build 'ExpressionAttributeNames'
 
-    expression_attribute_names = {f"#{key}": str(key) for key in update_fields.keys()}
+    expression_attribute_names = {f"#{key}": str(
+        key) for key in update_fields.keys()}
 
     # Dynamically build 'ExpressionAttributeValues'
-    expression_attribute_values = {f":{key}": value for key, value in update_fields.items()}
-
+    expression_attribute_values = {
+        f":{key}": value for key, value in update_fields.items()}
 
     try:
         response = table.update_item(
@@ -131,9 +145,8 @@ async def update_player(id: str, player: UpdatePlayer):
 
         )
         return {"id": id, "attributes": response["Attributes"]}
-    except Exception as e:
-        print(f"An error occurred updating {id}: {e}")
-
+    except botocore.exceptions.ClientError as e:
+        logging.exception(f"An error occurred: {e}")
 
 @app.delete("/players/{id}")
 async def delete_player(id: str):
@@ -159,7 +172,7 @@ async def delete_player(id: str):
         raise
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An error occurred deleting player.")
 
 
 def get_dynamodb_table():
