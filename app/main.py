@@ -120,30 +120,20 @@ async def update_player(id: str, player: UpdatePlayer):
     # Dynamically build 'ExpressionAttributeValues'
     expression_attribute_values = {f":{key}": value for key, value in update_fields.items()}
     
-    return {"message": expression_attribute_values}
+    # return {"message": expression_attribute_values}
 
-    # try:
-    #     response = table.update_item(
-    #         Key={"id": id},
-    #         UpdateExpression="set #team = :team, #position = :position, #club_number = :club_number, #national_team_number = :national_team_number",
-    #         ExpressionAttributeNames={
-    #             "#team": "team",
-    #             "#position": "position",
-    #             "#club_number": "club_number",
-    #             "#national_team_number": "national_team_number",
-    #         },
-    #         ExpressionAttributeValues={
-    #             ":team": player.team,
-    #             ":position": player.position,
-    #             ":club_number": player.club_number,
-    #             ":national_team_number": player.national_team_number
-    #         },
-    #         ReturnValues="UPDATED_NEW",
+    try:
+        response = table.update_item(
+            Key={"id": id},
+            UpdateExpression=update_expression,
+            ExpressionAttributeNames=expression_attribute_names,
+            ExpressionAttributeValues=expression_attribute_values,
+            ReturnValues="UPDATED_NEW",
 
-    #     )
-    #     return {"id": id, "attributes": response["Attributes"]}
-    # except Exception as e:
-    #     print(f"An error occurred updating {id}: {e}")
+        )
+        return {"id": id, "attributes": response["Attributes"]}
+    except Exception as e:
+        print(f"An error occurred updating {id}: {e}")
 
 
 @app.delete("/players/{id}")
