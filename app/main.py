@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from mangum import Mangum
 from pydantic import BaseModel
 from datetime import date
@@ -58,7 +58,7 @@ async def create_player(player: Player):
 
     # Add player to DynamoDB Table
     try:
-        table = get_dynamoddb_table()
+        table = get_dynamodb_table()
         table.put_item(Item=item)
         return {"player_id": item["id"], "player_name": item["name"]}
     except Exception as e:
@@ -68,7 +68,7 @@ async def create_player(player: Player):
 @app.get("/players/{id}")
 async def get_player(id: str):
     # Retrieve player data by id from DynamoDB Table
-    table = get_dynamoddb_table()
+    table = get_dynamodb_table()
     response = table.get_item(Key={"id": id})
     item = response.get("Item")
 
@@ -93,7 +93,7 @@ async def get_all_players():
 @app.patch("/players/{id}")
 async def update_player(id: str, player: UpdatePlayer):
     """Update player details in DynamoDB Table"""
-    table = get_dynamoddb_table()
+    table = get_dynamodb_table()
 
     try:
         response = table.update_item(
@@ -122,15 +122,14 @@ async def update_player(id: str, player: UpdatePlayer):
 @app.delete("/players/{id}")
 async def delete_player(id: str):
     # Delete player from DynamoDB Table
-    table = get_dynamoddb_table()
+    table = get_dynamodb_table()
 
     try:
 
         response = table.get_item(Key={"id": id})
 
         if "Item" not in response:
-            raise HTTPException(
-                status_code=404, detail=f"Player '{id}' not found")
+            raise HTTPException(detail=f"Player '{id}' not found")
 
         table.delete_item(Key={
             "id": id
@@ -142,7 +141,7 @@ async def delete_player(id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def get_dynamoddb_table():
+def get_dynamodb_table():
     table_name = "Players"
 
     if local_development:
