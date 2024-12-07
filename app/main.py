@@ -136,7 +136,7 @@ async def delete_player(id: str):
             "id": id
         })
 
-        return {"deleted_id": id}
+        return {"message": f"'{id}' successfully deleted."}
 
     except HTTPException:
 
