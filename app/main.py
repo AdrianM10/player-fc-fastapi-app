@@ -80,7 +80,7 @@ async def get_player(id: str):
 @app.get("/players")
 async def get_all_players():
     # Retrieve all players from DynamoDB Table
-    table = get_dynamoddb_table()
+    table = get_dynamodb_table()
     response = table.scan()
     items = response["Items"]
 
@@ -129,13 +129,18 @@ async def delete_player(id: str):
         response = table.get_item(Key={"id": id})
 
         if "Item" not in response:
-            raise HTTPException(detail=f"Player '{id}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Player '{id}' not found")
 
         table.delete_item(Key={
             "id": id
         })
 
         return {"deleted_id": id}
+
+    except HTTPException:
+
+        raise
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
