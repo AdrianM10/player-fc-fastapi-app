@@ -67,7 +67,7 @@ async def create_player(player: Player):
 
 @app.get("/players/{id}")
 async def get_player(id: str):
-    # Retrieve player data by id from DynamoDB Table
+    """Retrieve player data by id from DynamoDB Table"""
     table = get_dynamodb_table()
     response = table.get_item(Key={"id": id})
     item = response.get("Item")
@@ -79,7 +79,7 @@ async def get_player(id: str):
 
 @app.get("/players")
 async def get_all_players():
-    # Retrieve all players from DynamoDB Table
+    """Retrieve all players from DynamoDB Table"""
     table = get_dynamodb_table()
     response = table.scan()
     items = response["Items"]
@@ -87,36 +87,56 @@ async def get_all_players():
     if len(items) == 0:
         return {"message": "No players found"}
     else:
-        return {"count": len(items), "data": items}
+        return {"count": len(items), "players": items}
 
 
 @app.patch("/players/{id}")
 async def update_player(id: str, player: UpdatePlayer):
     """Update player details in DynamoDB Table"""
+
     table = get_dynamodb_table()
 
-    try:
-        response = table.update_item(
-            Key={"id": id},
-            UpdateExpression="set #team = :team, #position = :position, #club_number = :club_number, #national_team_number = :national_team_number",
-            ExpressionAttributeNames={
-                "#team": "team",
-                "#position": "position",
-                "#club_number": "club_number",
-                "#national_team_number": "national_team_number",
-            },
-            ExpressionAttributeValues={
-                ":team": player.team,
-                ":position": player.position,
-                ":club_number": player.club_number,
-                ":national_team_number": player.national_team_number
-            },
-            ReturnValues="UPDATED_NEW",
+    # Check if id exists before performing patch operation
+    response = table.get_item(Key={"id": id})
+    item = response.get("Item")
 
-        )
-        return {"id": id, "attributes": response["Attributes"]}
-    except Exception as e:
-        print(f"An error occurred updating {id}: {e}")
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Player '{
+                            id}' does not exist")
+
+    update_fields = {
+        key: value for key, value in player
+        if value is not None
+    }
+
+    # Dynamically build 'UpdateExpression'
+    update_expression = "set " + \
+        ", ".join(f"#{key} = :{key}" for key in update_fields.keys())
+    
+    return {"message": update_expression}
+
+    # try:
+    #     response = table.update_item(
+    #         Key={"id": id},
+    #         UpdateExpression="set #team = :team, #position = :position, #club_number = :club_number, #national_team_number = :national_team_number",
+    #         ExpressionAttributeNames={
+    #             "#team": "team",
+    #             "#position": "position",
+    #             "#club_number": "club_number",
+    #             "#national_team_number": "national_team_number",
+    #         },
+    #         ExpressionAttributeValues={
+    #             ":team": player.team,
+    #             ":position": player.position,
+    #             ":club_number": player.club_number,
+    #             ":national_team_number": player.national_team_number
+    #         },
+    #         ReturnValues="UPDATED_NEW",
+
+    #     )
+    #     return {"id": id, "attributes": response["Attributes"]}
+    # except Exception as e:
+    #     print(f"An error occurred updating {id}: {e}")
 
 
 @app.delete("/players/{id}")
