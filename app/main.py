@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from mangum import Mangum
-from models.players import Player, UpdatePlayer
 from routers.players import router as players_router
 
 import logging
