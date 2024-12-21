@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.post("/players")
 async def create_player(player: Player):
+    """Create player in DynamoDB Table"""
 
     player_id = uuid.uuid5(
         uuid.NAMESPACE_DNS,
@@ -139,6 +140,8 @@ async def delete_player(id: str):
 
 
 def get_dynamodb_table(local_development: bool = False):
+    """Retrieve DynamoDB Table connection based on environment"""
+
     table_name = "Players"
 
     if local_development:
