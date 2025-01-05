@@ -5,12 +5,27 @@ import uuid
 import logging
 
 from fastapi import FastAPI, HTTPException, status
-from models.players import Player, UpdatePlayer
+from app.models.players import Player, UpdatePlayer
 from fastapi import APIRouter
+
 router = APIRouter()
 
+def get_dynamodb_table(local_development: bool = True):
+    """Retrieve DynamoDB Table connection based on environment"""
+
+    table_name = "Players"
+
+    if local_development:
+        return boto3.resource("dynamodb",
+                              endpoint_url="http://localhost:7001",
+                              region_name="af-south",
+                              aws_access_key_id="myid",
+                              aws_secret_access_key="myaccesskey").Table(table_name)
+    else:
+        return boto3.resource("dynamodb").Table(table_name)
+
 @router.post("/players")
-async def create_player(player: Player):
+async def create_player(player: Player) -> dict:
     """Create player in DynamoDB Table"""
 
     player_id = uuid.uuid5(
@@ -139,16 +154,4 @@ async def delete_player(id: str):
 
 
 
-def get_dynamodb_table(local_development: bool = False):
-    """Retrieve DynamoDB Table connection based on environment"""
 
-    table_name = "Players"
-
-    if local_development:
-        return boto3.resource("dynamodb",
-                              endpoint_url="http://localhost:7001",
-                              region_name="af-south",
-                              aws_access_key_id="myid",
-                              aws_secret_access_key="myaccesskey").Table(table_name)
-    else:
-        return boto3.resource("dynamodb").Table(table_name)
