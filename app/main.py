@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from mangum import Mangum
-from routers.players import router as players_router
+from app.routers.players import router as players_router
 
 import logging
 
@@ -18,5 +18,5 @@ handler = Mangum(app)
 @app.get("/")
 def root():
     return {"message": "Welcome to the Players FC API!",
-            "description": "Some say 'No player is bigger than the club.' Let's be real, we care more about players than the actual team most of the time.",
+            "description": "More than just a Game",
             }
