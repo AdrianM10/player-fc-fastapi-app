@@ -5,12 +5,12 @@ import uuid
 import logging
 
 from fastapi import FastAPI, HTTPException, status
-from app.models.players import Player, UpdatePlayer
+from models.players import Player, UpdatePlayer
 from fastapi import APIRouter
 
 router = APIRouter()
 
-def get_dynamodb_table(local_development: bool = True):
+def get_dynamodb_table(local_development: bool = False):
     """Retrieve DynamoDB Table connection based on environment"""
 
     table_name = "Players"
