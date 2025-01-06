@@ -1,0 +1,56 @@
+[
+    {
+        "name": "Kylian Mbappé",
+        "country": "France",
+        "date_of_birth": "1998-12-20",
+        "team": "Real Madrid",
+        "position": "Forward",
+        "club_number": 9,
+        "national_team_number": 10
+    },
+    {
+        "name": "Vinícius Júnior",
+        "country": "Brazil",
+        "date_of_birth": "2000-07-12",
+        "team": "Real Madrid",
+        "position": "Forward",
+        "club_number": 7,
+        "national_team_number": 7
+    },
+    {
+        "name": "Christopher Nkunku",
+        "country": "France",
+        "date_of_birth": "1997-11-14",
+        "team": "Chelsea",
+        "position": "Forward",
+        "club_number": 18,
+        "national_team_number": 12
+    },
+    {
+        "name": "Cole Palmer",
+        "country": "England",
+        "date_of_birth": "2002-05-06",
+        "team": "Chelsea",
+        "position": "Midfielder",
+        "club_number": 20,
+        "national_team_number": 20
+    },
+    {
+        "name": "Victor Osimhen",
+        "country": "Nigeria",
+        "date_of_birth": "1998-12-29",
+        "team": "Galatasaray",
+        "position": "Forward",
+        "club_number": 45,
+        "national_team_number": 9
+    },
+    {
+        "name": "Jude Bellingham",
+        "country": "England",
+        "date_of_birth": "2003-06-29",
+        "team": "Real Madrid",
+        "position": "Midfielder",
+        "club_number": 5,
+        "national_team_number": 10
+    }
+]
