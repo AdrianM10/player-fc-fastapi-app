@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 
 def main():
 
-    # Create DynamoDB Client
+    # Create DynamoDB resource
     dynamodb = boto3.resource(
         "dynamodb",
         endpoint_url="http://localhost:7001",
