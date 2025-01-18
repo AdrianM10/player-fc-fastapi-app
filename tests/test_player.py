@@ -1,6 +1,7 @@
 import pytest
 import boto3
 import os
+import json
 from fastapi.testclient import TestClient
 from moto import mock_aws
 from app.main import app
@@ -60,14 +61,44 @@ def test_root():
 
 def test_create_player(dynamodb_table, player_data):
 
+    print("=================================== \n")
+    print(f"Sending player data: \n\n {json.dumps(player_data, indent=2)}")
+
+    response = client.post("/players", json=player_data)
+    assert response.status_code == 200
+
+    data = response.json()
+    print("=================================== \n")
+    print(f"API response: \n\n {json.dumps(data, indent=2)}")
+
+    # Verify persistence in DynamoDB table
+    dynamodb_response = dynamodb_table.get_item(
+        Key={'id': player_data['id']}
+    )
+
+    print("=================================== \n")
+    print(f"DynamoDB Item Attributes : \n\n {dynamodb_response}")
+
+    assert dynamodb_response['Item']['name'] == 'Christopher Nkunku'
+    assert dynamodb_response['Item']['country'] == 'France'
+    assert dynamodb_response['Item']['date_of_birth'] == '1997-11-14'
+    assert dynamodb_response['Item']['team'] == 'Chelsea'
+
+
+
+def test_get_player(dynamodb_table, player_data):
+
     dynamodb_table.put_item(Item=player_data)
     response = dynamodb_table.get_item(
-        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
+        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})['Item']
 
-    assert 'Item' in response
-    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
-    assert response['Item']['id'] == '4d6d8412-c021-52bc-8c47-feed545b0ced'
-    assert response['Item']['name'] == 'Christopher Nkunku'
+    assert response['name'] == 'Christopher Nkunku'
+    assert response['team'] == 'Chelsea'
+    assert response['position'] == 'Forward'
+    assert response['country'] == 'France'
+    assert response['date_of_birth'] == '1997-11-14'
+    assert response['club_number'] == 18
+    assert response['national_team_number'] == 12
 
 
 def test_update_player(dynamodb_table, player_data):
