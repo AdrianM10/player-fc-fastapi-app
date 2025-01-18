@@ -8,6 +8,21 @@ from app.main import app
 client = TestClient(app)
 
 
+@pytest.fixture
+def player_data():
+    """Sample data to provide consistent player test data"""
+    return {
+        "id": "4d6d8412-c021-52bc-8c47-feed545b0ced",
+        "name": "Christopher Nkunku",
+        "country": "France",
+        "date_of_birth": "1997-11-14",
+        "team": "Chelsea",
+        "position": "Forward",
+        "club_number": 18,
+        "national_team_number": 12
+    }
+
+
 @pytest.fixture(scope="module")
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
@@ -43,19 +58,9 @@ def test_root():
     }
 
 
-def test_create_player(dynamodb_table):
-    player = {
-        "id": "4d6d8412-c021-52bc-8c47-feed545b0ced",
-        "name": "Christopher Nkunku",
-        "country": "France",
-        "date_of_birth": "1997-11-14",
-        "team": "Chelsea",
-        "position": "Forward",
-        "club_number": 18,
-        "national_team_number": 12
-    }
+def test_create_player(dynamodb_table, player_data):
 
-    dynamodb_table.put_item(Item=player)
+    dynamodb_table.put_item(Item=player_data)
     response = dynamodb_table.get_item(
         Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
 
@@ -65,20 +70,9 @@ def test_create_player(dynamodb_table):
     assert response['Item']['name'] == 'Christopher Nkunku'
 
 
-def test_update_player(dynamodb_table):
+def test_update_player(dynamodb_table, player_data):
 
-    id = "4d6d8412-c021-52bc-8c47-feed545b0ced"
-
-    player_data = {
-        "id": id,
-        "name": "Christopher Nkunku",
-        "country": "France",
-        "date_of_birth": "1997-11-14",
-        "team": "Chelsea",
-        "position": "Forward",
-        "club_number": 18,
-        "national_team_number": 12
-    }
+    id = player_data['id']
 
     dynamodb_table.put_item(Item=player_data)
     response = dynamodb_table.get_item(
@@ -98,20 +92,9 @@ def test_update_player(dynamodb_table):
     assert response['team'] == 'Bayern Munich'
 
 
-def test_delete_player(dynamodb_table):
+def test_delete_player(dynamodb_table, player_data):
 
-    id = "4d6d8412-c021-52bc-8c47-feed545b0ced"
-
-    player_data = {
-        "id": id,
-        "name": "Christopher Nkunku",
-        "country": "France",
-        "date_of_birth": "1997-11-14",
-        "team": "Chelsea",
-        "position": "Forward",
-        "club_number": 18,
-        "national_team_number": 12
-    }
+    id = player_data['id']
 
     dynamodb_table.put_item(Item=player_data)
     response = dynamodb_table.get_item(
