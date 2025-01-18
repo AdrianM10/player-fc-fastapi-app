@@ -84,7 +84,6 @@ def test_update_player(dynamodb_table):
     response = dynamodb_table.get_item(
         Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
 
-
     update_player_data = {
         "team": "Bayern Munich"
     }
@@ -96,4 +95,33 @@ def test_update_player(dynamodb_table):
     )
 
     response = dynamodb_table.get_item(Key={'id': id})['Item']
-    assert response['team']  == 'Bayern Munich'
+    assert response['team'] == 'Bayern Munich'
+
+
+def test_delete_player(dynamodb_table):
+
+    id = "4d6d8412-c021-52bc-8c47-feed545b0ced"
+
+    player_data = {
+        "id": id,
+        "name": "Christopher Nkunku",
+        "country": "France",
+        "date_of_birth": "1997-11-14",
+        "team": "Chelsea",
+        "position": "Forward",
+        "club_number": 18,
+        "national_team_number": 12
+    }
+
+    dynamodb_table.put_item(Item=player_data)
+    response = dynamodb_table.get_item(
+        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
+
+    dynamodb_table.delete_item(Key={'id': id})
+    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert response['Item']['id'] == '4d6d8412-c021-52bc-8c47-feed545b0ced'
+
+    updated_response = dynamodb_table.get_item(
+        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'}
+    )
+    assert 'Item' not in updated_response
