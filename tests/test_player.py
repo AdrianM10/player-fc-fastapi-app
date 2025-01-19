@@ -24,6 +24,15 @@ def player_data():
     }
 
 
+@pytest.fixture
+def all_players():
+
+    with open('players.json', 'r') as file:
+        data = json.load(file)
+
+    return data
+
+
 @pytest.fixture(scope="module")
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
@@ -85,6 +94,12 @@ def test_create_and_get_player(dynamodb_table, player_data):
     assert dynamodb_response['Item']['id'] == created_player_id
 
 
+def test_get_all_players(dynamodb_table, all_players):
+    ...
+
+  
+
+
 def test_update_player(dynamodb_table, player_data):
 
     # Initially create player
@@ -134,14 +149,10 @@ def test_delete_player(dynamodb_table, player_data):
     get_player = client.get(f"/players/{player_id}")
     assert get_player.status_code == 404
 
+
 def test_delete_non_existent_player(dynamodb_table):
 
     player_id = "c73eb4d2-8b8b-5e2e-9d66-69b8f2d11874"
 
     response = client.delete(f"players/{player_id}")
     assert response.status_code == 404
-
-
-
-
-
