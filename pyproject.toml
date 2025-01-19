@@ -4,4 +4,4 @@ testpaths = ["tests"]
 addopts = [
     "--import-mode=importlib",
 ]
-filterwarnings =  "ignore::DeprecationWarning:botocore.*"
+filterwarnings = "ignore::DeprecationWarning:botocore.*"
