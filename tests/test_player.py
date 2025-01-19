@@ -70,25 +70,15 @@ def test_root():
 
 def test_create_and_get_player(dynamodb_table, player_data):
 
-    # print("=================================== \n")
-    # print(f"Sending player data: \n\n {json.dumps(player_data, indent=2)}")
-
     response = client.post("/players", json=player_data)
     assert response.status_code == 200
     data = response.json()
 
     created_player_id = data['player_id']
 
-    # print("=================================== \n")
-    # print(f"API response: \n\n {json.dumps(data, indent=2)}")
-
-    # Verify persistence in DynamoDB table
     dynamodb_response = dynamodb_table.get_item(
         Key={'id': player_data['id']}
     )
-
-    # print("=================================== \n")
-    # print(f"DynamoDB Item Attributes : \n\n {dynamodb_response}")
 
     assert dynamodb_response['Item'] == player_data
     assert dynamodb_response['Item']['id'] == created_player_id
@@ -103,7 +93,6 @@ def test_get_all_players(dynamodb_table, all_players):
         data = response.json()
         players.append(data)
 
-    # Get all players
     response = client.get("/players")
     data = response.json()
     assert response.status_code == 200
@@ -126,13 +115,10 @@ def test_get_all_players(dynamodb_table, all_players):
 
 def test_update_player(dynamodb_table, player_data):
 
-    # Initially create player
     response = client.post(f"/players", json=player_data)
     assert response.status_code == 200
     data = response.json()
     player_id = data['player_id']
-
-    # Update player details
 
     update_player_data = {
         "team": "Bayern Munich",
@@ -147,28 +133,20 @@ def test_update_player(dynamodb_table, player_data):
         Key={'id': player_id}
     )
 
-    # Verify if player data has been updated
-
     assert dynamodb_response['Item']['team'] == update_player_data['team']
     assert dynamodb_response['Item']['club_number'] == update_player_data['club_number']
 
 
 def test_delete_player(dynamodb_table, player_data):
 
-    # Create player
     response = client.post(f"players/", json=player_data)
     assert response.status_code == 200
 
     data = response.json()
     player_id = data['player_id']
 
-    # Delete player
     deleted_response = client.delete(f"players/{player_id}")
     assert deleted_response.status_code == 200
-
-    dynamodb_response = dynamodb_table.get_item(
-        Key={'id': player_id}
-    )
 
     get_player = client.get(f"/players/{player_id}")
     assert get_player.status_code == 404
