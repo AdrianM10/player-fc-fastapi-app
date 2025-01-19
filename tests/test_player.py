@@ -105,7 +105,7 @@ def test_update_player(dynamodb_table, player_data):
     assert updated_response.status_code == 200
 
     dynamodb_response = dynamodb_table.get_item(
-        Key={'id': player_data['id']}
+        Key={'id': player_id}
     )
 
     # Verify if player data has been updated
@@ -114,19 +114,28 @@ def test_update_player(dynamodb_table, player_data):
     assert dynamodb_response['Item']['club_number'] == update_player_data['club_number']
 
 
-# def test_delete_player(dynamodb_table, player_data):
+def test_delete_player(dynamodb_table, player_data):
 
-#     id = player_data['id']
+    # Create player
+    response = client.post(f"players/", json=player_data)
+    assert response.status_code == 200
 
-#     dynamodb_table.put_item(Item=player_data)
-#     response = dynamodb_table.get_item(
-#         Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
+    data = response.json()
+    player_id = data['player_id']
 
-#     dynamodb_table.delete_item(Key={'id': id})
-#     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
-#     assert response['Item']['id'] == '4d6d8412-c021-52bc-8c47-feed545b0ced'
+    # Delete player
+    deleted_response = client.delete(f"players/{player_id}")
+    assert deleted_response.status_code == 200
 
-#     updated_response = dynamodb_table.get_item(
-#         Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'}
-#     )
-#     assert 'Item' not in updated_response
+    dynamodb_response = dynamodb_table.get_item(
+        Key={'id': player_id}
+    )
+
+    get_player = client.get(f"/players/{player_id}")
+    assert get_player.status_code == 404
+
+
+
+
+
+
