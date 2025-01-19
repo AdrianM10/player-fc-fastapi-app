@@ -103,20 +103,25 @@ def test_get_all_players(dynamodb_table, all_players):
         data = response.json()
         players.append(data)
 
-
     # Get all players
     response = client.get("/players")
     data = response.json()
     assert response.status_code == 200
     assert len(data['players']) == len(all_players)
-    assert [player for player in data['players'] if player['name'] == "Kylian Mbappé"]
-    assert [player for player in data['players'] if player['name'] == "Vinícius Júnior"]
-    assert [player for player in data['players'] if player['name'] == "Christopher Nkunku"]
-    assert [player for player in data['players'] if player['name'] == "Cole Palmer"]
-    assert [player for player in data['players'] if player['name'] == "Victor Osimhen"]    
-    assert [player for player in data['players'] if player['name'] == "Jude Bellingham"]
-    assert [player for player in data['players'] if player['name'] != "Rodrigo Hernández Cascante"]
-    
+    assert [player for player in data['players']
+            if player['name'] == "Kylian Mbappé"]
+    assert [player for player in data['players']
+            if player['name'] == "Vinícius Júnior"]
+    assert [player for player in data['players']
+            if player['name'] == "Christopher Nkunku"]
+    assert [player for player in data['players']
+            if player['name'] == "Cole Palmer"]
+    assert [player for player in data['players']
+            if player['name'] == "Victor Osimhen"]
+    assert [player for player in data['players']
+            if player['name'] == "Jude Bellingham"]
+    assert [player for player in data['players']
+            if player['name'] != "Rodrigo Hernández Cascante"]
 
 
 def test_update_player(dynamodb_table, player_data):
