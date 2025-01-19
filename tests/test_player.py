@@ -134,6 +134,12 @@ def test_delete_player(dynamodb_table, player_data):
     get_player = client.get(f"/players/{player_id}")
     assert get_player.status_code == 404
 
+def test_delete_non_existent_player(dynamodb_table):
+
+    player_id = "c73eb4d2-8b8b-5e2e-9d66-69b8f2d11874"
+
+    response = client.delete(f"players/{player_id}")
+    assert response.status_code == 404
 
 
 
