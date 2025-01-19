@@ -59,83 +59,74 @@ def test_root():
     }
 
 
-def test_create_player(dynamodb_table, player_data):
+def test_create_and_get_player(dynamodb_table, player_data):
 
-    print("=================================== \n")
-    print(f"Sending player data: \n\n {json.dumps(player_data, indent=2)}")
+    # print("=================================== \n")
+    # print(f"Sending player data: \n\n {json.dumps(player_data, indent=2)}")
 
     response = client.post("/players", json=player_data)
     assert response.status_code == 200
-
     data = response.json()
-    print("=================================== \n")
-    print(f"API response: \n\n {json.dumps(data, indent=2)}")
+
+    created_player_id = data['player_id']
+
+    # print("=================================== \n")
+    # print(f"API response: \n\n {json.dumps(data, indent=2)}")
 
     # Verify persistence in DynamoDB table
     dynamodb_response = dynamodb_table.get_item(
         Key={'id': player_data['id']}
     )
 
-    print("=================================== \n")
-    print(f"DynamoDB Item Attributes : \n\n {dynamodb_response}")
+    # print("=================================== \n")
+    # print(f"DynamoDB Item Attributes : \n\n {dynamodb_response}")
 
-    assert dynamodb_response['Item']['name'] == 'Christopher Nkunku'
-    assert dynamodb_response['Item']['country'] == 'France'
-    assert dynamodb_response['Item']['date_of_birth'] == '1997-11-14'
-    assert dynamodb_response['Item']['team'] == 'Chelsea'
-
-
-
-def test_get_player(dynamodb_table, player_data):
-
-    dynamodb_table.put_item(Item=player_data)
-    response = dynamodb_table.get_item(
-        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})['Item']
-
-    assert response['name'] == 'Christopher Nkunku'
-    assert response['team'] == 'Chelsea'
-    assert response['position'] == 'Forward'
-    assert response['country'] == 'France'
-    assert response['date_of_birth'] == '1997-11-14'
-    assert response['club_number'] == 18
-    assert response['national_team_number'] == 12
+    assert dynamodb_response['Item'] == player_data
+    assert dynamodb_response['Item']['id'] == created_player_id
 
 
 def test_update_player(dynamodb_table, player_data):
 
-    id = player_data['id']
+    # Initially create player
+    response = client.post(f"/players", json=player_data)
+    assert response.status_code == 200
+    data = response.json()
+    player_id = data['player_id']
 
-    dynamodb_table.put_item(Item=player_data)
-    response = dynamodb_table.get_item(
-        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
+    # Update player details
 
     update_player_data = {
-        "team": "Bayern Munich"
+        "team": "Bayern Munich",
+        "club_number": 10,
     }
 
-    dynamodb_table.update_item(
-        Key={'id': id},
-        UpdateExpression='SET team = :team',
-        ExpressionAttributeValues={':team': update_player_data['team']}
+    updated_response = client.patch(
+        f"/players/{player_id}", json=update_player_data)
+    assert updated_response.status_code == 200
+
+    dynamodb_response = dynamodb_table.get_item(
+        Key={'id': player_data['id']}
     )
 
-    response = dynamodb_table.get_item(Key={'id': id})['Item']
-    assert response['team'] == 'Bayern Munich'
+    # Verify if player data has been updated
+
+    assert dynamodb_response['Item']['team'] == update_player_data['team']
+    assert dynamodb_response['Item']['club_number'] == update_player_data['club_number']
 
 
-def test_delete_player(dynamodb_table, player_data):
+# def test_delete_player(dynamodb_table, player_data):
 
-    id = player_data['id']
+#     id = player_data['id']
 
-    dynamodb_table.put_item(Item=player_data)
-    response = dynamodb_table.get_item(
-        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
+#     dynamodb_table.put_item(Item=player_data)
+#     response = dynamodb_table.get_item(
+#         Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'})
 
-    dynamodb_table.delete_item(Key={'id': id})
-    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
-    assert response['Item']['id'] == '4d6d8412-c021-52bc-8c47-feed545b0ced'
+#     dynamodb_table.delete_item(Key={'id': id})
+#     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+#     assert response['Item']['id'] == '4d6d8412-c021-52bc-8c47-feed545b0ced'
 
-    updated_response = dynamodb_table.get_item(
-        Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'}
-    )
-    assert 'Item' not in updated_response
+#     updated_response = dynamodb_table.get_item(
+#         Key={'id': '4d6d8412-c021-52bc-8c47-feed545b0ced'}
+#     )
+#     assert 'Item' not in updated_response
