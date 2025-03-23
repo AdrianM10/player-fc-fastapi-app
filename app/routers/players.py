@@ -25,7 +25,7 @@ def get_dynamodb_table(local_development: bool = False):
         return boto3.resource("dynamodb").Table(table_name)
 
 @router.post("/players")
-async def create_player(player: Player) -> dict:
+def create_player(player: Player) -> dict:
     """Create player in DynamoDB Table"""
 
     player_id = uuid.uuid5(
@@ -54,7 +54,7 @@ async def create_player(player: Player) -> dict:
         raise HTTPException(status_code=500, detail="An error occurred creating player.")
 
 @router.get("/players")
-async def get_all_players():
+def get_all_players():
     """Retrieve all players from DynamoDB Table"""
     table = get_dynamodb_table()
 
@@ -71,7 +71,7 @@ async def get_all_players():
         raise HTTPException(status_code=500, detail="An error occurred retrieving all players.")
     
 @router.get("/players/{id}")
-async def get_player(id: str):
+def get_player(id: str):
     """Retrieve player data by id from DynamoDB Table"""
     table = get_dynamodb_table()
     response = table.get_item(Key={"id": id})
@@ -82,7 +82,7 @@ async def get_player(id: str):
     return item    
 
 @router.patch("/players/{id}")
-async def update_player(id: str, player: UpdatePlayer):
+def update_player(id: str, player: UpdatePlayer):
     """Update player details in DynamoDB Table"""
 
     table = get_dynamodb_table()
@@ -127,7 +127,7 @@ async def update_player(id: str, player: UpdatePlayer):
         logging.exception(f"An error occurred: {e}")
 
 @router.delete("/players/{id}")
-async def delete_player(id: str):
+def delete_player(id: str):
     """Delete player from DynamoDB Table"""
     table = get_dynamodb_table()
 
