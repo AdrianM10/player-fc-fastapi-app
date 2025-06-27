@@ -6,5 +6,9 @@
 
 This repository provides a simple Player API that uses FastAPI, DynamoDB and hosted on AWS Lambda.
 
-For detailed information, visit the [blog post](https://adrianthegreat.com/2025/01/06/Serverless-FastAPI-Development-Building-Player-FC-API-on-AWS/)
+For detailed information, visit the below bog post series:
+
+[Serverless FastAPI Development: Building Player FC API on AWS](https://adrianthegreat.com/2025/01/06/Serverless-FastAPI-Development-Building-Player-FC-API-on-AWS/)
+
+[Serverless FastAPI Testing: Use Moto and Just Mock It!](https://adrianthegreat.com/2025/06/21/Serverless-FastAPI-Testing-Use-Moto-and-Just-Mock-It/)
 
