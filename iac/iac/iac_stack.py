@@ -39,7 +39,7 @@ class IacStack(Stack):
 
         # Create Lambda Function URL
         functionUrl = api.add_function_url(
-            auth_type=_lambda.FunctionUrlAuthType.NONE,
+            auth_type=_lambda.FunctionUrlAuthType.AWS_IAM,
             cors=_lambda.FunctionUrlCorsOptions(
                 allowed_origins=["*"],
                 allowed_methods=[_lambda.HttpMethod.ALL],
