@@ -31,6 +31,13 @@ class IacStack(Stack):
             ),
         )
 
+        # Create Resource Server
+        user_pool_resource_server = user_pool.add_resource_server(
+            "PlayerFCResourceServer",
+            identifier="playerfc-m2m-resource-server",
+            user_pool_resource_server_name="PlayerFCResourceServer",
+        )
+
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
                                  table_name="Players",
