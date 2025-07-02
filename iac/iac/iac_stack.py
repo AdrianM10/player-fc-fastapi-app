@@ -44,6 +44,18 @@ class IacStack(Stack):
             ]
         )
 
+        # Create User Pool Client
+        user_pool_client = user_pool.add_client(
+            "CognitoUserPoolClient",
+            user_pool_client_name="PlayerFC-M2M-Client",
+            generate_secret=True,
+            supported_identity_providers=[cognito.UserPoolClientIdentityProvider.COGNITO],
+            auth_flows=cognito.AuthFlow(
+                user_password=False,
+                user_srp=False,
+            )
+        )
+
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
                                  table_name="Players",
