@@ -102,6 +102,15 @@ class IacStack(Stack):
             create_default_stage=True, 
             description="PlayerFC API Gateway")
         
+        # Add Lambda Function URL as integration
+        http_api.add_routes(
+            path="/",
+            methods=[gateway.HttpMethod.ANY],
+            integration=gateway_integrations.HttpLambdaIntegration(
+                "LambdaIntegration",
+                api
+            )
+        )
 
         
         
