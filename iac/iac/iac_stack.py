@@ -22,7 +22,14 @@ class IacStack(Stack):
         user_pool = cognito.UserPool(self, "PlayerFCUserPool",
                                      user_pool_name="PlayerFCUserPool",
                                      removal_policy=RemovalPolicy.DESTROY,)
-        
+
+        # Create Amazon Cognito User Pool Domain
+        user_pool_domain = user_pool.add_domain(
+            "PlayerFcCognitoDomain",
+            cognito_domain=cognito.CognitoDomainOptions(
+                domain_prefix="playerfc",
+            ),
+        )
 
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
