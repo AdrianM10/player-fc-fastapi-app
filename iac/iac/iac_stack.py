@@ -6,6 +6,8 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_lambda_python_alpha as _alambda,
     aws_cognito as cognito,
+    aws_apigatewayv2 as gateway,
+    aws_apigatewayv2_integrations as gateway_integrations,
     Fn,
     CfnOutput
 
@@ -49,12 +51,13 @@ class IacStack(Stack):
             "CognitoUserPoolClient",
             user_pool_client_name="PlayerFC-M2M-Client",
             generate_secret=True,
-            supported_identity_providers=[cognito.UserPoolClientIdentityProvider.COGNITO],
+            supported_identity_providers=[
+                cognito.UserPoolClientIdentityProvider.COGNITO],
             auth_flows=cognito.AuthFlow(
                 user_password=False,
                 user_srp=False,
             )
-        )
+        )      
 
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
@@ -92,3 +95,13 @@ class IacStack(Stack):
 
         # Permissions for Function to access DynamoDB
         table.grant_read_write_data(api)
+
+        # Create API Gateway
+        http_api = gateway.HttpApi(
+            self, "PlayerFCHttpApi", 
+            create_default_stage=True, 
+            description="PlayerFC API Gateway")
+        
+
+        
+        
