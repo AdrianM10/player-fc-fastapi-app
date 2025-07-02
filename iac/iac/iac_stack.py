@@ -36,6 +36,12 @@ class IacStack(Stack):
             "PlayerFCResourceServer",
             identifier="playerfc-m2m-resource-server",
             user_pool_resource_server_name="PlayerFCResourceServer",
+            scopes=[
+                cognito.ResourceServerScope(
+                    scope_name="read_write",
+                    scope_description="Read & Write access for Player FC M2M application"
+                )
+            ]
         )
 
         # Create DynamoDB Table
