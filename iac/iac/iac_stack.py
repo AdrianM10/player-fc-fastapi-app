@@ -6,6 +6,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_lambda_python_alpha as _alambda,
     aws_cognito as cognito,
+    Fn,
     CfnOutput
 
 )
@@ -18,11 +19,10 @@ class IacStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # Create Amazon Cognito User Pool
-        user_pool = cognito.UserPool(
-            self, "PlayerFCUserPool",
-            user_pool_name="Player FC User Pool",
-            removal_policy=RemovalPolicy.DESTROY
-        )
+        user_pool = cognito.UserPool(self, "PlayerFCUserPool",
+                                     user_pool_name="PlayerFCUserPool",
+                                     removal_policy=RemovalPolicy.DESTROY,)
+        
 
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
