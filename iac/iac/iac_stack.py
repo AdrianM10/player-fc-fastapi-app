@@ -6,8 +6,9 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_lambda_python_alpha as _alambda,
     aws_cognito as cognito,
-    aws_apigatewayv2 as gateway,
+    aws_apigatewayv2 as apigatewayv2,
     aws_apigatewayv2_integrations as gateway_integrations,
+    aws_apigatewayv2_authorizers as gateway_authorizers,
     Fn,
     CfnOutput
 
@@ -57,7 +58,7 @@ class IacStack(Stack):
                 user_password=False,
                 user_srp=False,
             )
-        )      
+        )
 
         # Create DynamoDB Table
         table = dynamodb.TableV2(self, "Table",
@@ -97,20 +98,39 @@ class IacStack(Stack):
         table.grant_read_write_data(api)
 
         # Create API Gateway
-        http_api = gateway.HttpApi(
-            self, "PlayerFCHttpApi", 
-            create_default_stage=True, 
+        http_api = apigatewayv2.HttpApi(
+            self, "PlayerFCHttpApi",
+            create_default_stage=True,
             description="PlayerFC API Gateway")
         
-        # Add Lambda Function URL as integration
-        http_api.add_routes(
-            path="/",
-            methods=[gateway.HttpMethod.ANY],
+        # # Add route with Lambda integration
+        # http_api.add_routes(
+        #     path="/",
+        #     methods=[apigatewayv2.HttpMethod.ANY],
+        #     integration=gateway_integrations.HttpLambdaIntegration(
+        #         "LambdaIntegration",
+        #         api
+        #     )
+        # )
+
+        # Create Authorizer JWT Authorizer
+       
+        jwt_authorizer = gateway_authorizers.HttpJwtAuthorizer("JWTAuthorizer",
+                                                      identity_source=[
+                                                          "$request.header.Authorization"],
+                                                      jwt_audience=[
+                                                          user_pool_client.user_pool_client_id],
+                                                      jwt_issuer=user_pool.user_pool_provider_url)
+
+        
+
+        # Add route to get all players
+        http_route = http_api.add_routes(
+            path="/players",
+            methods=[apigatewayv2.HttpMethod.GET],
             integration=gateway_integrations.HttpLambdaIntegration(
                 "LambdaIntegration",
                 api
-            )
+            ),
+            authorizer=jwt_authorizer
         )
-
-        
-        
