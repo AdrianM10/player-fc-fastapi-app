@@ -117,7 +117,8 @@ class IacStack(Stack):
         # Add route to add, retrieve player(s)
         http_api.add_routes(
             path="/players",
-            methods=[apigatewayv2.HttpMethod.GET, apigatewayv2.HttpMethod.POST],
+            methods=[apigatewayv2.HttpMethod.GET,
+                     apigatewayv2.HttpMethod.POST],
             integration=gateway_integrations.HttpLambdaIntegration(
                 "LambdaIntegration",
                 api
@@ -134,4 +135,14 @@ class IacStack(Stack):
                 api
             )
         )
-   
+
+        # Add route to update or remove player
+        http_api.add_routes(
+            path="/players/{player_id}",
+            methods=[apigatewayv2.HttpMethod.PATCH,
+                     apigatewayv2.HttpMethod.DELETE],
+            integration=gateway_integrations.HttpLambdaIntegration(
+                "LambdaIntegration",
+                api
+            )
+        )
