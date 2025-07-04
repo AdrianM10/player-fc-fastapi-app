@@ -133,7 +133,8 @@ class IacStack(Stack):
             integration=gateway_integrations.HttpLambdaIntegration(
                 "LambdaIntegration",
                 api
-            )
+            ),
+            authorizer=jwt_authorizer
         )
 
         # Add route to update or remove player
@@ -144,5 +145,6 @@ class IacStack(Stack):
             integration=gateway_integrations.HttpLambdaIntegration(
                 "LambdaIntegration",
                 api
-            )
+            ),
+            authorizer=jwt_authorizer
         )
