@@ -107,7 +107,6 @@ class IacStack(Stack):
             description="PlayerFC API Gateway")
 
         # Create JWT Authorizer
-
         jwt_authorizer = gateway_authorizers.HttpJwtAuthorizer("JWTAuthorizer",
                                                                identity_source=[
                                                                    "$request.header.Authorization"],
@@ -115,13 +114,24 @@ class IacStack(Stack):
                                                                    user_pool_client.user_pool_client_id],
                                                                jwt_issuer=user_pool.user_pool_provider_url)
 
-        # Add route to get all players
-        http_route = http_api.add_routes(
+        # Add route to add, retrieve player(s)
+        http_api.add_routes(
             path="/players",
-            methods=[apigatewayv2.HttpMethod.GET],
+            methods=[apigatewayv2.HttpMethod.GET, apigatewayv2.HttpMethod.POST],
             integration=gateway_integrations.HttpLambdaIntegration(
                 "LambdaIntegration",
                 api
             ),
             authorizer=jwt_authorizer
         )
+
+        # Add route to retrieve a single player
+        http_api.add_routes(
+            path="/players/{player_id}",
+            methods=[apigatewayv2.HttpMethod.GET],
+            integration=gateway_integrations.HttpLambdaIntegration(
+                "LambdaIntegration",
+                api
+            )
+        )
+   
