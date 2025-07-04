@@ -34,17 +34,17 @@ class IacStack(Stack):
             ),
         )
 
+        # Create Full Access Scope
+        full_access_scope = cognito.ResourceServerScope(
+            scope_name="read_write",
+            scope_description="Full access to Player FC API"
+        )
+
         # Create Resource Server
         user_pool_resource_server = user_pool.add_resource_server(
             "PlayerFCResourceServer",
             identifier="playerfc-m2m-resource-server",
-            user_pool_resource_server_name="PlayerFCResourceServer",
-            scopes=[
-                cognito.ResourceServerScope(
-                    scope_name="read_write",
-                    scope_description="Read & Write access for Player FC M2M application"
-                )
-            ]
+            scopes=[full_access_scope]
         )
 
         # Create User Pool Client
@@ -52,11 +52,14 @@ class IacStack(Stack):
             "CognitoUserPoolClient",
             user_pool_client_name="PlayerFC-M2M-Client",
             generate_secret=True,
-            supported_identity_providers=[
-                cognito.UserPoolClientIdentityProvider.COGNITO],
-            auth_flows=cognito.AuthFlow(
-                user_password=False,
-                user_srp=False,
+            supported_identity_providers=[],
+            auth_flows=cognito.AuthFlow(custom=True),
+            o_auth=cognito.OAuthSettings(
+                flows=cognito.OAuthFlows(client_credentials=True),
+                scopes=[
+                    cognito.OAuthScope.resource_server(
+                        user_pool_resource_server, full_access_scope),
+                ]
             )
         )
 
@@ -102,27 +105,15 @@ class IacStack(Stack):
             self, "PlayerFCHttpApi",
             create_default_stage=True,
             description="PlayerFC API Gateway")
-        
-        # # Add route with Lambda integration
-        # http_api.add_routes(
-        #     path="/",
-        #     methods=[apigatewayv2.HttpMethod.ANY],
-        #     integration=gateway_integrations.HttpLambdaIntegration(
-        #         "LambdaIntegration",
-        #         api
-        #     )
-        # )
 
-        # Create Authorizer JWT Authorizer
-       
+        # Create JWT Authorizer
+
         jwt_authorizer = gateway_authorizers.HttpJwtAuthorizer("JWTAuthorizer",
-                                                      identity_source=[
-                                                          "$request.header.Authorization"],
-                                                      jwt_audience=[
-                                                          user_pool_client.user_pool_client_id],
-                                                      jwt_issuer=user_pool.user_pool_provider_url)
-
-        
+                                                               identity_source=[
+                                                                   "$request.header.Authorization"],
+                                                               jwt_audience=[
+                                                                   user_pool_client.user_pool_client_id],
+                                                               jwt_issuer=user_pool.user_pool_provider_url)
 
         # Add route to get all players
         http_route = http_api.add_routes(
