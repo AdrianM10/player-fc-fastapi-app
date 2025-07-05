@@ -27,7 +27,7 @@ class IacStack(Stack):
                                      removal_policy=RemovalPolicy.DESTROY,)
 
         # Create Amazon Cognito User Pool Domain
-        user_pool_domain = user_pool.add_domain(
+        user_pool.add_domain(
             "PlayerFcCognitoDomain",
             cognito_domain=cognito.CognitoDomainOptions(
                 domain_prefix="playerfc",
@@ -77,7 +77,7 @@ class IacStack(Stack):
             "API",
             entry="../app",
             function_name="player_fc_api",
-            runtime=_lambda.Runtime.PYTHON_3_12,
+            runtime=_lambda.Runtime.PYTHON_3_13,
             index="main.py",
             handler="handler",
             timeout=Duration.seconds(60)
@@ -105,6 +105,9 @@ class IacStack(Stack):
             self, "PlayerFCHttpApi",
             create_default_stage=True,
             description="PlayerFC API Gateway")
+        
+        # Print API Gateway URL
+        CfnOutput(self, "PlayerFCHttpApiUrl", value=http_api.api_endpoint)
 
         # Create JWT Authorizer
         jwt_authorizer = gateway_authorizers.HttpJwtAuthorizer("JWTAuthorizer",
