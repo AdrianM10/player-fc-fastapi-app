@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant Client
+    participant Cognito as Amazon Cognito
+    participant Gateway as API Gateway
+    participant Authorizer as Cognito JWT Authorizer
+    participant Lambda as Lambda (FastAPI)
+
+    Client->>Cognito: 1. Authenticate with client id & client secret
+    Cognito->>Client: 2. Return access token
+
+    Client->>Gateway: 3. Request to API Gateway with access token
+    Gateway->>Authorizer: 4. Validate JWT access token
+    Authorizer-->>Gateway: 5. Token valid/invalid
+    Gateway->>Lambda: 6. Forward request to Lambda (FastAPI) if valid
+    Lambda->>Gateway: 7. Process and return response
+    Gateway->>Client: 8. Forward response to client
