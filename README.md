@@ -12,3 +12,5 @@ For detailed information, visit the below bog post series:
 
 [Serverless FastAPI Testing: Use Moto and Just Mock It!](https://adrianthegreat.com/2025/06/21/Serverless-FastAPI-Testing-Use-Moto-and-Just-Mock-It/)
 
+[Serverless FastAPI Security: Unlocked Doors Invite Unwanted Guests](https://adrianthegreat.com/2025/07/12/Serverless-FastAPI-Security-Unlocked-Doors-Invite-Unwanted-Guests/)
+
