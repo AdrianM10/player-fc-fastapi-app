@@ -4,7 +4,11 @@
 
 ![](FastAPIOnAWS.png)
 
-This repository provides a simple Player API that uses FastAPI, DynamoDB and hosted on AWS Lambda.
+This repository provides a serverless FastAPI application (Player FC) deployed on AWS using AWS Lambda, DynamoDB, Amazon Cognito and API Gateway all managed via the AWS CDK.
+
+## OAuth 2.0 Sequence Diagram
+
+![](SequenceDiagram.png)
 
 For detailed information, visit the below bog post series:
 
