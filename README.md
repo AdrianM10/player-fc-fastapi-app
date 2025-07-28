@@ -1,7 +1,5 @@
 ## Player FC FastAPI App
 
-[![CodeTime Badge](https://img.shields.io/endpoint?style=social&color=222&url=https%3A%2F%2Fapi.codetime.dev%2Fshield%3Fid%3D24794%26project%3Dplayer-fc-fastapi-app%26in=0)](https://codetime.dev)
-
 ![](FastAPIOnAWS.png)
 
 This repository provides a serverless FastAPI application (Player FC) deployed on AWS using AWS Lambda, DynamoDB, Amazon Cognito and API Gateway all managed via the AWS CDK.
