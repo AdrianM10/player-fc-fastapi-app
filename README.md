@@ -8,7 +8,7 @@ This repository provides a serverless FastAPI application (Player FC) deployed o
 
 ![](SequenceDiagram.png)
 
-For detailed information, visit the below bog post series:
+For detailed information, visit the below blog post series:
 
 [Serverless FastAPI Development: Building Player FC API on AWS](https://adrianthegreat.com/2025/01/06/Serverless-FastAPI-Development-Building-Player-FC-API-on-AWS/)
 
