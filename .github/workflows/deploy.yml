@@ -1,12 +1,11 @@
 name: Deploy Player FC API
 
 on:
-  push:
-    branches: [ feature/github-actions ]
+    push:
+        branches: [feature/github-actions]
 
 env:
-  
-  AWS_REGION : af-south-1
+    AWS_REGION: af-south-1
 
 permissions:
     id-token: write
@@ -18,18 +17,26 @@ jobs:
         steps:
             - name: Git clone the repository
               uses: actions/checkout@v5
-            
+
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v5.1.0
               with:
-                aws-region: ${{ env.AWS_REGION }}
-                role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-                role-session-name: GitHub_Actions_to_AWS_OIDC
+                  aws-region: ${{ env.AWS_REGION }}
+                  role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+                  role-session-name: GitHub_Actions_to_AWS_OIDC
 
             - name: Sts GetCallerIdentity
               run: |
-                aws sts get-caller-identity
+                  aws sts get-caller-identity
 
-            
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+            - run: npm ci
 
-
+            - name: Install AWS CDK
+              run: npm install -g aws-cdk
+            - name: Deploy CDK stack
+              working-directory: ./iac
+              run: cdk deploy --require-approval never
