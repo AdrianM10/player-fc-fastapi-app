@@ -25,15 +25,20 @@ jobs:
                   role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
                   role-session-name: GitHub_Actions_to_AWS_OIDC
 
-            - name: Sts GetCallerIdentity
-              run: |
-                  aws sts get-caller-identity
-
             - name: Setup Node
               uses: actions/setup-node@v6
               with:
                   node-version: 24
-            - run: npm ci
+
+            - name: Setup Python
+              uses: actions/setup-python@v6
+
+            - name: Install Python dependencies
+              working-directory: ./iac
+              with:
+                python-version: "3.13"
+              run: |
+                  pip install -r requirements.txt
 
             - name: Install AWS CDK
               run: npm install -g aws-cdk
