@@ -35,25 +35,10 @@ jobs:
         working-directory: ./tests
         run: |
           pip install pytest
-          pytest test_player.py 
-
-  AssumeRoleAndCallIdentity:
-    needs: [Test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5.1.0
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-          role-session-name: GitHub_Actions_to_AWS_OIDC
-          mask-aws-account-id: true
+          pytest test_player.py
 
   Deploy:
-    needs: [AssumeRoleAndCallIdentity]
+    needs: [Test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -76,6 +61,14 @@ jobs:
 
       - name: Install AWS CDK
         run: npm install -g aws-cdk
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+          role-session-name: GitHub_Actions_to_AWS_OIDC
+          mask-aws-account-id: true
       - name: Deploy CDK stack
         working-directory: ./iac
         run: cdk deploy --require-approval never
