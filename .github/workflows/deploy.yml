@@ -41,7 +41,7 @@ jobs:
     needs: [Test]
     runs-on: ubuntu-latest
     steps:
-      - name: Git clone the repository
+      - name: Checkout repo
         uses: actions/checkout@v5
 
       - name: Configure AWS credentials
@@ -56,6 +56,8 @@ jobs:
     needs: [AssumeRoleAndCallIdentity]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
