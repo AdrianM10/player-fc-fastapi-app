@@ -1,0 +1,55 @@
+name: Destroy Player FC CDK Stack
+
+on:
+    workflow_dispatch:
+        inputs:
+            confirm:
+                description: "Are you sure you want to delete: IacStack (y/n)?"
+                required: true
+
+env:
+    AWS_REGION: af-south-1
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    Destroy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Delete CDK stack
+              if: github.event.inputs.confirm != 'y'
+              run: |
+                  exit 1
+            - name: Checkout repo
+              uses: actions/checkout@v5
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+
+            - name: Setup Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.13"
+                  cache: "pip"
+
+            - name: Install Python dependencies
+              working-directory: ./iac
+              run: |
+                  pip install -r requirements.txt
+
+            - name: Install AWS CDK
+              run: npm install -g aws-cdk
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v5.1.0
+              with:
+                  aws-region: ${{ env.AWS_REGION }}
+                  role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+                  role-session-name: GitHub_Actions_to_AWS_OIDC
+                  mask-aws-account-id: true
+            - name: Destroy CDK stack
+              working-directory: ./iac
+              run: cdk destroy --all --force
