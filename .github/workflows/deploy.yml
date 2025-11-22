@@ -1,8 +1,9 @@
 name: Deploy Player FC API
 
 on:
-  push:
-    branches: [feature/github-actions]
+  pull_request:
+    branches:
+      - main
 
 env:
   AWS_REGION: af-south-1
