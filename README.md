@@ -16,3 +16,4 @@ For detailed information, visit the below blog post series:
 
 [Serverless FastAPI Security: Unlocked Doors Invite Unwanted Guests](https://adrianthegreat.com/2025/07/12/Serverless-FastAPI-Security-Unlocked-Doors-Invite-Unwanted-Guests/)
 
+[Serverless FastAPI Deployment: Actions Speak Louder Than Words](https://adrianthegreat.com/2025/11/23/Serverless-FastAPI-Deployment-Actions-Speak-Louder-Than-Words/)
